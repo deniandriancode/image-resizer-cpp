@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <filesystem>
+#include <vector>
 #include "CImg.h"
 
 namespace fs = std::filesystem;
@@ -16,16 +17,24 @@ inline bool fileExists(const std::string& name);
 int main(int argc, char *argv[])
 {
 	int iflag { 0 };
-	int rflag { 0 };
-	int index {};
+	unsigned int index {};
 	int c {};
-	char* rvalue = nullptr;
+	char* rvalue { nullptr };
+	char* output { nullptr };
 	
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "ir:")) != -1) {
-		if (c == 'i') {
-			iflag = 1;
+	while ((c = getopt (argc, argv, "ir:o:")) != -1) {
+		switch (c) {
+			case 'i':
+				iflag = 1;
+				break;
+			case 'r':
+				rvalue = optarg;
+				break;
+			case 'o':
+				output = optarg;
+				break;
 		}
 	}
 
@@ -33,10 +42,19 @@ int main(int argc, char *argv[])
 		for (index = optind; index < argc; ++index) {
 			printInfo(argv[index]);
 		}
-	} else if (rflag) {
-		rvalue = optarg;
-		int sizeX {};
-		int sizeY {};
+	} else if (rvalue != nullptr) {
+		std::string sizeNew(rvalue);
+		std::stringstream ss(sizeNew);
+		std::vector<std::string> tokens;
+		std::string tmp;
+
+		while (std::getline(ss, tmp, 'x')) {
+			tokens.push_back(tmp);
+		}
+
+		int sizeX { std::stoi(tokens.at(0)) };
+		int sizeY { std::stoi(tokens.at(1)) };
+
 		for (index = optind; index < argc; ++index) {
 			resize(argv[index], sizeX, sizeY);
 		}

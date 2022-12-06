@@ -5,14 +5,21 @@ int main(int argc, char *argv[])
 {
 	/* get i flag */
 	int iflag { 0 };
+	int rflag { 0 };
 	int index {};
 	int c {};
+	char* cvalue = nullptr;
 	
 	opterr = 0;
 
-	while ((c = getopt (argc, argv, "i")) != -1) {
-		if (c == 'i') {
-			iflag = 1;
+	while ((c = getopt (argc, argv, "ir:")) != -1) {
+		switch (c) {
+			case 'i':
+				iflag = 1;
+				break;
+			case 'r':
+				cvalue = optarg;
+				break;
 		}
 	}
 
@@ -21,8 +28,9 @@ int main(int argc, char *argv[])
 			std::cout << argv[index] << " has the following information." << std::endl;
 		}
 	} else {
-		std::cout << argv[optind] << " is a file." << std::endl;
+		std::cout << cvalue << std::endl;
+		std::cout << argv[optind] << std::endl;
 	}
-	
+
 	return 0;
 }
